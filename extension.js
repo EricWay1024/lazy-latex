@@ -199,6 +199,15 @@ function activate(context) {
     if (event.document !== editor.document) return;
     if (isApplyingLazyLatexEdit) return;
 
+    // 🔹 Read the setting each time, so toggling it in Settings works immediately
+    const config = vscode.workspace.getConfiguration('lazy-latex');
+    const autoReplaceEnabled = config.get('autoReplace', true);
+    if (!autoReplaceEnabled) {
+      // You can log if you want:
+      // console.log('[Lazy LaTeX] autoReplace disabled; ignoring Enter.');
+      return;
+    }
+
     for (const change of event.contentChanges) {
       if (change.text.includes('\n')) {
         const lineNumber = change.range.start.line; // line that was just "finished"
@@ -234,7 +243,7 @@ function activate(context) {
   context.subscriptions.push(changeDisposable);
 }
 
-function deactivate() {}
+function deactivate() { }
 
 module.exports = {
   activate,

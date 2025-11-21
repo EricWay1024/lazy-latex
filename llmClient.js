@@ -88,7 +88,11 @@ async function callChatCompletion(systemPrompt, userPrompt) {
  * @returns {Promise<string>} LaTeX math expression (no surrounding $)
  */
 async function generateLatexFromText(selectedText) {
-  const systemPrompt = `
+  // Read extra project-specific instructions from config
+  const config = vscode.workspace.getConfiguration('lazy-latex');
+  const extra = config.get('prompt.extra') || '';
+
+  let systemPrompt = `
 You are an assistant that converts informal or natural language math
 (and possibly incorrect LaTeX) into a single valid LaTeX math expression.
 
@@ -98,6 +102,13 @@ Rules:
 - Do NOT include backticks, explanations, or comments.
 - Prefer concise, standard LaTeX math notation.
 `.trim();
+
+  if (extra && typeof extra === 'string') {
+    systemPrompt += `
+
+Additional project-specific instructions:
+${extra}`.trimEnd();
+  }
 
   const userPrompt = `
 Convert the following text into a single LaTeX math expression.
