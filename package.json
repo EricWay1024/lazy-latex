@@ -9,13 +9,46 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
   "main": "./extension.js",
+  "activationEvents": [
+    "onLanguage:latex",
+    "onCommand:lazy-latex.mathToLatex"
+  ],
   "contributes": {
-    "commands": [{
-      "command": "lazy-latex.helloWorld",
-      "title": "Hello World"
-    }]
+    "commands": [
+      {
+        "command": "lazy-latex.mathToLatex",
+        "title": "Lazy LaTeX: Convert selection to math"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "lazy-latex.mathToLatex",
+        "key": "ctrl+alt+m",
+        "when": "editorTextFocus"
+      }
+    ],
+    "configuration": {
+      "title": "Lazy LaTeX",
+      "properties": {
+        "lazy-latex.llm.endpoint": {
+          "type": "string",
+          "default": "https://api.openai.com/v1/chat/completions",
+          "description": "HTTP endpoint for an OpenAI-compatible chat completion API."
+        },
+        "lazy-latex.llm.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "API key for your LLM provider.",
+          "secret": true
+        },
+        "lazy-latex.llm.model": {
+          "type": "string",
+          "default": "gpt-4o-mini",
+          "description": "Model name to use for LaTeX generation."
+        }
+      }
+    }
   },
   "scripts": {
     "lint": "eslint .",
