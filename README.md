@@ -35,7 +35,7 @@ After you press **Enter** on that line, Lazy LaTeX will:
 - Call your configured LLM
 - Replace wrappers with real LaTeX:
 
-```
+```latex
 This is $\int_0^1 x^2\,dx$.
 
 And here is display:
@@ -47,7 +47,7 @@ And here is display:
 
 Auto replacement can be enabled/disabled via a setting.
 
-------
+---
 
 ### 2. Manual command: convert selection to LaTeX
 
@@ -58,19 +58,13 @@ You can also select any text (natural language or messy LaTeX) and run:
 
 The selected text is replaced by a single LaTeX math expression (no surrounding `$`).
 
-------
+---
 
 ### 3. Per-project conventions with `.lazy-latex.md`
 
-In each project, you can create a file in the workspace root:
+In each project, you can create a file named `.lazy-latex.md` in the workspace root, and write any instructions you want the LLM to follow for this project, for example:
 
-```
-.lazy-latex.md
-```
-
-Write any instructions you want the LLM to follow for this project, for example:
-
-```
+```latex
 # LaTeX conventions for this project
 
 - Use \mathbf for vectors.
@@ -81,7 +75,7 @@ Write any instructions you want the LLM to follow for this project, for example:
 
 Lazy LaTeX will read this file and include it in the system prompt as **high-priority project settings**.
 
-------
+---
 
 ### 4. Extra instructions via VS Code settings
 
@@ -98,7 +92,7 @@ If both exist:
 
 The system prompt roughly looks like:
 
-```
+```md
 Rules:
 - Output ONLY the LaTeX math expression itself.
 - No $ or $$.
@@ -113,7 +107,7 @@ LOWER PRIORITY from user settings:
 <lazy-latex.prompt.extra>
 ```
 
-------
+---
 
 ## Configuration
 
@@ -133,7 +127,7 @@ Available options:
 - **`lazy-latex.prompt.extra`** (string)
    Extra system-level instructions (lower priority than `.lazy-latex.md`).
 
-------
+---
 
 ## Requirements
 
@@ -141,7 +135,7 @@ Available options:
 - An OpenAI-compatible chat completion endpoint
 - A valid API key and model name
 
-------
+---
 
 ## Usage
 
@@ -157,7 +151,7 @@ Available options:
 5. Or manually:
    - Select text → `Lazy LaTeX: Convert selection to math` (Ctrl+Alt+M).
 
-------
+---
 
 ## Notes
 
