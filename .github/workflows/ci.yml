@@ -1,0 +1,54 @@
+name: Release Pipeline
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+    # inputs:
+    #   publish_to_marketplace:
+    #     description: "Publish to VSCode Marketplace"
+    #     default: false
+    #     required: true
+    #     type: boolean
+    #   version_tag:
+    #     description: "Version tag for the release (e.g., v1.0.0)"
+    #     required: true
+    #     type: string
+
+permissions:
+  contents: write
+
+jobs:
+  package_extension:
+    name: Package VSCode Extension
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup node.js environment
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: "./pnpm-lock.yaml"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Package extension
+        run: pnpm package
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: lazy-latex-extension
+          path: "*.vsix"
