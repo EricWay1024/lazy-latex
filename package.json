@@ -37,10 +37,20 @@
           "default": true,
           "description": "Automatically convert ;;...;; and ;;;...;;; wrappers on Enter."
         },
+        "lazy-latex.llm.provider": {
+          "type": "string",
+          "default": "openai",
+          "enum": [
+            "openai",
+            "anthropic",
+            "gemini"
+          ],
+          "markdownDescription": "LLM provider. 'openai' for OpenAI-compatible chat completion APIs; 'anthropic' for Claude (Messages API); 'gemini' for Gemini via its OpenAI-compatible endpoint."
+        },
         "lazy-latex.llm.endpoint": {
           "type": "string",
           "default": "https://api.openai.com/v1/chat/completions",
-          "description": "HTTP endpoint for an OpenAI-compatible chat completion API."
+          "description": "HTTP endpoint for an LLM chat completion API."
         },
         "lazy-latex.llm.apiKey": {
           "type": "string",

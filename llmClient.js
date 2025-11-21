@@ -1,6 +1,7 @@
 const vscode = require('vscode');
 const fs = require('fs');
 const path = require('path');
+const { callChatCompletionWithProvider } = require('./llmProvider');
 
 /**
  * Read LLM settings from VS Code config.
@@ -11,9 +12,11 @@ function getLlmConfig() {
   const endpoint = config.get('llm.endpoint');
   const apiKey = config.get('llm.apiKey');
   const model = config.get('llm.model');
+  const provider = config.get('llm.provider', 'openai');
 
-  return { endpoint, apiKey, model };
+  return { endpoint, apiKey, model, provider };
 }
+
 
 /**
  * Read:
@@ -59,60 +62,16 @@ async function getExtraInstructionsSources() {
  * @returns {Promise<string>}
  */
 async function callChatCompletion(systemPrompt, userPrompt) {
-  const { endpoint, apiKey, model } = getLlmConfig();
+  const { endpoint, apiKey, model, provider } = getLlmConfig();
 
-  if (!apiKey) {
-    vscode.window.showErrorMessage(
-      'Lazy LaTeX: No API key set. Please configure "lazy-latex.llm.apiKey" in Settings.'
-    );
-    throw new Error('Missing API key');
-  }
-
-  if (!endpoint || !model) {
-    vscode.window.showErrorMessage(
-      'Lazy LaTeX: LLM endpoint or model is not configured.'
-    );
-    throw new Error('Missing endpoint or model');
-  }
-
-  const body = {
+  return callChatCompletionWithProvider({
+    provider,
+    endpoint,
+    apiKey,
     model,
-    messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: userPrompt },
-    ],
-    temperature: 0,
-  };
-
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify(body),
+    systemPrompt,
+    userPrompt,
   });
-
-  if (!response.ok) {
-    const text = await response.text().catch(() => '');
-    console.error('LLM HTTP error:', response.status, text);
-    throw new Error(`LLM request failed: ${response.status} ${response.statusText}`);
-  }
-
-  const data = await response.json();
-
-  const content =
-    data.choices &&
-    data.choices[0] &&
-    data.choices[0].message &&
-    data.choices[0].message.content;
-
-  if (!content || typeof content !== 'string') {
-    console.error('Unexpected LLM response shape:', data);
-    throw new Error('LLM response did not contain text content');
-  }
-
-  return content.trim();
 }
 
 /**
