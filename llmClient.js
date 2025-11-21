@@ -123,11 +123,13 @@ async function callChatCompletion(systemPrompt, userPrompt) {
  * - base system rules
  * - .lazy-latex.md (HIGH PRIORITY, if present)
  * - lazy-latex.prompt.extra (lower priority)
+ * - optional contextText (recent lines from the document)
  *
  * @param {string} selectedText
+ * @param {string} [contextText]  // optional
  * @returns {Promise<string>} LaTeX math expression (no surrounding $)
  */
-async function generateLatexFromText(selectedText) {
+async function generateLatexFromText(selectedText, contextText) {
   const { fileExtra, settingExtra } = await getExtraInstructionsSources();
 
   let systemPrompt = `
@@ -156,7 +158,22 @@ Rules:
     systemPrompt = systemPrompt.trimEnd();
   }
 
+  let contextBlock = '';
+  if (contextText && typeof contextText === 'string' && contextText.trim().length > 0) {
+    contextBlock = `
+The following is context from the recent lines of the current LaTeX document.
+Use it to interpret notation and meaning, but do not rewrite it. It may contain
+definitions, assumptions, or earlier formulas.
+
+Context:
+"""
+${contextText}
+"""
+`.trim();
+  }
+
   const userPrompt = `
+${contextBlock ? contextBlock + '\n\n' : ''}
 Convert the following text into a single LaTeX math expression.
 
 Text:

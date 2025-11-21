@@ -57,6 +57,12 @@
           "type": "string",
           "default": "",
           "markdownDescription": "Extra system-level instructions appended to the LaTeX generation prompt. Useful per project, e.g. “use bold vectors, treat f as a PDF, use \\mathbb for sets”."
+        },
+        "lazy-latex.context.lines": {
+          "type": "integer",
+          "default": 50,
+          "minimum": 0,
+          "description": "Number of previous lines to send as context to the LLM. 0 disables context. A very large number would mean the entire file up to the current line."
         }
       }
     }

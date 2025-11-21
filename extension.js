@@ -1,6 +1,41 @@
 const vscode = require('vscode');
 const { generateLatexFromText } = require('./llmClient');
 
+
+/**
+ * Get context from previous N lines before a given line number.
+ * N is read from `lazy-latex.context.lines`.
+ *
+ * If contextLines = 0, returns an empty string.
+ * If contextLines is large, this may include the entire file above the line.
+ *
+ * @param {vscode.TextDocument} document
+ * @param {number} lineNumber
+ * @returns {string} joined context lines (may be empty)
+ */
+function getContextBeforeLine(document, lineNumber) {
+  const config = vscode.workspace.getConfiguration('lazy-latex');
+  const contextLines = config.get('context.lines', 5);
+
+  if (!contextLines || contextLines <= 0) {
+    return '';
+  }
+
+  const startLine = Math.max(0, lineNumber - contextLines);
+  const endLine = lineNumber - 1;
+
+  if (endLine < startLine) {
+    return '';
+  }
+
+  const lines = [];
+  for (let ln = startLine; ln <= endLine; ln++) {
+    lines.push(document.lineAt(ln).text);
+  }
+  return lines.join('\n');
+}
+
+
 /**
  * Find all ;;...;; (inline) and ;;;...;;; (display) wrappers in a single line.
  * Returns an array of:
@@ -87,6 +122,9 @@ async function processLineForWrappers(document, lineNumber, wrappers) {
   if (editor.document !== document) return;
   if (!wrappers || wrappers.length === 0) return;
 
+  // Compute context once per line
+  const contextText = getContextBeforeLine(document, lineNumber);
+
   const replacements = [];
 
   for (const w of wrappers) {
@@ -95,7 +133,7 @@ async function processLineForWrappers(document, lineNumber, wrappers) {
 
     try {
       console.log('[Lazy LaTeX] Generating LaTeX for', w.type, 'wrapper:', trimmed);
-      const latex = await generateLatexFromText(trimmed);
+      const latex = await generateLatexFromText(trimmed, contextText);
       if (!latex) continue;
 
       // Wrap depending on inline vs display
@@ -158,6 +196,9 @@ function activate(context) {
       }
 
       const selectedText = editor.document.getText(selection);
+      // Context based on the start line of the selection
+      const contextText = getContextBeforeLine(editor.document, selection.start.line);
+
 
       vscode.window.setStatusBarMessage(
         'Lazy LaTeX: generating LaTeX with LLM...',
@@ -166,7 +207,7 @@ function activate(context) {
 
       let latex;
       try {
-        latex = await generateLatexFromText(selectedText);
+        latex = await generateLatexFromText(selectedText, contextText);
       } catch (err) {
         console.error('Lazy LaTeX: LLM error', err);
         vscode.window.showErrorMessage(
