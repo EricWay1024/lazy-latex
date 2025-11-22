@@ -79,13 +79,16 @@ function getContextBeforeLine(document, lineNumber) {
  *   { type: 'inline' | 'display', inner: string, start: number, end: number }
  * where start/end are character indices in the line (end = index after closing delimiters).
  *
- * IMPORTANT: if the line (after trimming) starts with '%' (LaTeX comment),
- * we ignore it completely and return [].
  */
 function findMathWrappersInLine(lineText) {
   const trimmed = lineText.trim();
   if (trimmed.startsWith('%')) {
     // Entire line is a comment: do not touch any wrappers here.
+    return [];
+  }
+
+  // Markdown / HTML-style pure comment line: <!-- ... -->
+  if (trimmed.startsWith('<!--') && trimmed.endsWith('-->')) {
     return [];
   }
 
