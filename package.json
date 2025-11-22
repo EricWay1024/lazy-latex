@@ -6,6 +6,7 @@
   "license": "MIT",
   "version": "0.1.1",
   "publisher": "YuhangWei",
+  "icon": "images/icon.png",
   "engines": {
     "vscode": "^1.106.0"
   },
