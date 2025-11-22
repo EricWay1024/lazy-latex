@@ -1,0 +1,46 @@
+name: Release Version Tagging
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_tag:
+        description: "New release version tag (e.g., v1.2.3 / v2.0.0-beta.1)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  tag_release:
+    name: Tag Release
+    if: ${{ github.repository_owner == 'EricWay1024' && github.ref_name == 'master' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.LAZY_LATEX_RELEASE }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup node.js environment
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Configure git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Bump version and commit changes
+        run: |
+          pnpm version ${{ inputs.version_tag }} --message "chore(release): v%s"
+
+          git push --follow-tags

@@ -2,6 +2,7 @@
   "name": "lazy-latex",
   "displayName": "Lazy LaTeX",
   "description": "Write LaTeX lazily using LLM.",
+  "publisher": "yuhangwei",
   "repository": "https://github.com/EricWay1024/lazy-latex",
   "license": "MIT",
   "version": "0.1.1",
@@ -103,7 +104,7 @@
     }
   },
   "scripts": {
-    "package": "pnpm vsce package --no-dependencies",
+    "package": "pnpm vsce package --no-dependencies --githubBranch master",
     "lint": "eslint .",
     "pretest": "pnpm run lint",
     "test": "vscode-test"
