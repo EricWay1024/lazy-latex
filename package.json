@@ -2,7 +2,7 @@
   "name": "lazy-latex",
   "displayName": "Lazy LaTeX",
   "description": "Write LaTeX lazily using LLM.",
-  "publisher": "YuhangWei",
+  "publisher": "yuhangwei",
   "repository": "https://github.com/EricWay1024/lazy-latex",
   "license": "MIT",
   "version": "0.0.1",
