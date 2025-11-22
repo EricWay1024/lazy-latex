@@ -60,7 +60,7 @@ jobs:
       - name: Publish release to marketplace
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+          VSCE_PAT: ${{ secrets.LAZY_LATEX_VSCE_PAT }}
         run: |
           if ${{ contains(github.ref_name, 'beta') }}; then
             pnpm vsce publish -p "${{ env.VSCE_PAT }}" --packagePath *.vsix --skip-duplicate --pre-release
