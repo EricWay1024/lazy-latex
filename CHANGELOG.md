@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [0.0.2] - 2025-11-22
+## [0.1.1] - 2025-11-22
 ### Added
 - Configurable LaTeX output delimiters (`$...$` vs `\(...\)` and `\[...\]` vs `$$...$$`).
 - Markdown support with automatic `$...$` / `$$...$$` output and HTML-style comments.
