@@ -4,7 +4,7 @@
   "description": "Write LaTeX lazily using LLM.",
   "repository": "https://github.com/EricWay1024/lazy-latex",
   "license": "MIT",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "publisher": "YuhangWei",
   "engines": {
     "vscode": "^1.106.0"
