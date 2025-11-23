@@ -44,7 +44,7 @@ Press **Enter**, and it will insert that summary in place of the wrapper.
 
 ------
 
-## Quick start (2 minutes)
+## Quick start
 
 1. **Install the extension**
     Search for **“Lazy LaTeX”** in the VS Code Extensions view and install it.
@@ -56,7 +56,7 @@ Press **Enter**, and it will insert that summary in place of the wrapper.
     In VS Code, go to **Settings → search “Lazy LaTeX”**.
     Set at least:
 
-   - `Lazy-latex › Llm: Provider`
+   - `Lazy-latex › Llm: Provider` (Note: choose `openai` for any OpenAI-compatible APIs; see examples below.)
      - `openai` | `anthropic`
    - `Lazy-latex › Llm: Endpoint`
    - `Lazy-latex › Llm: Api Key` (Note: you need to get this from your LLM provider.)
@@ -64,19 +64,32 @@ Press **Enter**, and it will insert that summary in place of the wrapper.
 
    Examples:
 
-   - **OpenAI**
-     - Provider: `openai`
-     - Endpoint: `https://api.openai.com/v1/chat/completions`
-     - Model: `gpt-4o-mini` (or similar)
-   - **Anthropic (Claude)**
-     - Provider: `anthropic`
-     - Endpoint: `https://api.anthropic.com/v1/messages`
-     - Model: `claude-haiku-4-5` (or another Claude 3 model)
-   - **Gemini (OpenAI-compatible)**
-     - Provider: `openai`
-     - Endpoint: `https://generativelanguage.googleapis.com/v1beta/openai/chat/completions`
-     - Model: `gemini-2.5-flash` (or similar)
-
+  - **OpenAI**
+    - Provider: `openai`
+    - Endpoint: `https://api.openai.com/v1/chat/completions`
+    - Model: `gpt-4o-mini` (or similar)
+  - **Anthropic (Claude)**
+    - Provider: `anthropic`
+    - Endpoint: `https://api.anthropic.com/v1/messages`
+    - Model: `claude-haiku-4-5` (or another Claude 3 model)
+  - **DeepSeek**
+    - Provider: `openai`
+    - Endpoint: `https://api.deepseek.com/v1/chat/completions`
+    - Model: `deepseek-chat`
+  - **Doubao (ByteDance / 火山引擎豆包)**
+    - Provider: `openai`
+    - Endpoint: `https://ark.cn-beijing.volces.com/api/v3/chat/completions`
+    - Model: `doubao-1-5-pro-32k-250115` (other Doubao chat models may also work)
+  - **Gemini (OpenAI-compatible)**
+    - Provider: `openai`
+    - Endpoint: `https://generativelanguage.googleapis.com/v1beta/openai/chat/completions`
+    - Model: `gemini-2.5-flash` (or similar)
+  - **Ollama (local models)**
+    - Provider: `openai`
+    - Endpoint: `http://localhost:11434/v1/chat/completions`
+    - Model: any local model you’ve pulled in Ollama (e.g. `qwen2.5:7b`, `llama3.1:8b`)
+    - Note: when using `localhost` / `127.0.0.1` endpoints, the API key can be left blank.
+  
 4. **Try it once**
     In a `.tex` or `.md` file:
 
@@ -97,7 +110,7 @@ That’s enough to start using it.
 
 ------
 
-## How you actually use it
+## Detailed usage
 
 ### 1. Auto-convert wrappers on Enter
 
@@ -105,13 +118,6 @@ In **LaTeX** and **Markdown** files:
 
 - `;; ... ;;` → **inline math**
 - `;;; ... ;;;` → **display math**
-
-Write for example:
-
-```tex
-The pdf is ;;normal(0, 1);;.
-;;;sum from i=1 to n of a_i;;;
-```
 
 When you press **Enter** on that line:
 
@@ -184,16 +190,13 @@ When you press **Enter**:
   - Previous lines as context,
   - The raw current line (with wrappers).
 
-The output is inserted **as-is**:
-
-- In LaTeX: normal LaTeX text / environments / math / TikZ, depending on your instruction.
-- In Markdown: normal Markdown (including code fences, Mermaid, etc., if requested).
+The output is inserted **as-is**.
 
 `;;;;...;;;;` is a general “LLM macro” that lets you use the model as a context-aware writing assistant inside your document.
 
 ------
 
-## Making the LLM follow your notation
+## Style customization 
 
 You control the “style” of math in two layers.
 
@@ -240,7 +243,7 @@ So you can, for example, enforce vector styles and also say "summaries should be
 
 ------
 
-## Context awareness (so it “remembers” nearby text)
+## Context awareness 
 
 Lazy LaTeX sends some of your document as context so the LLM can use earlier definitions and keep notation consistent.
 
@@ -261,7 +264,7 @@ When you press Enter:
 - The **full current line** (with `;;...;;` / `;;;...;;;` / `;;;;...;;;;` still present) is sent too.
 - If a line has multiple wrappers, they are sent **together** in one request (for math), so the LLM can keep them consistent.
 
-For example:
+<!-- For example:
 
 ```tex
 Let ;;vec u, v in RRn;;. Write ;;u = (column vector with u_i);; and ;;v = (similar as u);;. Then we have ;;;u + v = (col vec with entry-wise addition);;;.
@@ -279,11 +282,11 @@ Then we have
 \vec{u} + \vec{v}
 = \begin{pmatrix} u_1 + v_1 \\ \cdots \\ u_n + v_n \end{pmatrix}.
 \]
-```
+``` -->
 
-All generated in one go, with consistent notation.
+<!-- All generated in one go, with consistent notation. -->
 
-The same context is also visible to `;;;;...;;;;` wrappers, which is what makes “summarize the previous paragraph” or “fix the following proof” actually work.
+<!-- The same context is also visible to `;;;;...;;;;` wrappers. -->
 
 ------
 
@@ -321,36 +324,42 @@ Open **Settings** → search for `Lazy LaTeX`.
 
 Key options:
 
-- `lazy-latex.autoReplace` (boolean, default `true`)
+- **`lazy-latex.autoReplace`** (boolean, default `true`)
    Automatically convert `;;...;;`, `;;;...;;;`, and `;;;;...;;;;` wrappers on Enter in `.tex` / `.md` files.
-- `lazy-latex.llm.provider` (string, default `"openai"`)
-   Which provider to use:
-  - `"openai"` — OpenAI-compatible chat completion APIs
+- **`lazy-latex.llm.provider`** (string, default `"openai"`)
+   Which protocol/provider to use:
+  - `"openai"` — any OpenAI-compatible chat completion API (OpenAI, DeepSeek, Doubao, Gemini’s OpenAI-compatible endpoint, Ollama, etc.)
   - `"anthropic"` — Claude via Anthropic Messages API
-  - `"gemini"` — Gemini via Google’s OpenAI-compatible endpoint
-- `lazy-latex.llm.endpoint` (string)
-   Endpoint URL for your provider, e.g.:
+- **`lazy-latex.llm.endpoint`** (string)
+   Endpoint URL for your provider, for example:
   - OpenAI: `https://api.openai.com/v1/chat/completions`
-  - Anthropic: `https://api.anthropic.com/v1/messages`
-  - Gemini: `https://generativelanguage.googleapis.com/v1beta/openai/chat/completions`
-- `lazy-latex.llm.apiKey` (string, secret)
+  - DeepSeek: `https://api.deepseek.com/v1/chat/completions`
+  - Doubao: `https://ark.cn-beijing.volces.com/api/v3/chat/completions`
+  - Gemini (OpenAI-compatible): `https://generativelanguage.googleapis.com/v1beta/openai/chat/completions`
+  - Anthropic (Claude): `https://api.anthropic.com/v1/messages`
+  - Ollama (local): `http://localhost:11434/v1/chat/completions`
+- **`lazy-latex.llm.apiKey`** (string, secret)
    API key for your provider.
-- `lazy-latex.llm.model` (string)
-   Model name used for generation, e.g.:
+  - For **remote** providers (OpenAI, DeepSeek, Doubao, Gemini, Anthropic), this is required.
+  - For **local** endpoints on `localhost` / `127.0.0.1` (e.g. Ollama), this can be left empty and Lazy LaTeX will not send an `Authorization` header.
+- **`lazy-latex.llm.model`** (string)
+   Model name used for generation, for example:
   - OpenAI: `gpt-4o-mini`
-  - Anthropic: `claude-haiku-4-5`
+  - DeepSeek: `deepseek-chat`
+  - Doubao: `doubao-1-5-pro-32k-250115`
   - Gemini: `gemini-2.5-flash`
-- `lazy-latex.prompt.extra` (string)
+  - Anthropic: `claude-haiku-4-5`
+  - Ollama: any local model you’ve pulled (e.g. `qwen2.5:7b`, `llama3.1:8b`)
+- **`lazy-latex.prompt.extra`** (string)
    Extra global/workspace instructions (lower priority than `.lazy-latex.md`).
-- `lazy-latex.context.lines` (integer, default `50`)
+- **`lazy-latex.context.lines`** (integer, default `50`)
    Number of previous lines to send as context.
-- `lazy-latex.output.latex.inlineStyle` (string: `"dollar"` | `"paren"`, default `"dollar"`)
+- **`lazy-latex.output.latex.inlineStyle`** (string: `"dollar"` | `"paren"`, default `"dollar"`)
    How to wrap inline math in LaTeX: `$...$` vs `\(...\)`.
-- `lazy-latex.output.latex.displayStyle` (string: `"brackets"` | `"dollars"`, default `"brackets"`)
+- **`lazy-latex.output.latex.displayStyle`** (string: `"brackets"` | `"dollars"`, default `"brackets"`)
    How to wrap display math in LaTeX: `\[...\]` vs `$$...$$`.
-- `lazy-latex.keepOriginalComment` (boolean, default `false`)
+- **`lazy-latex.keepOriginalComment`** (boolean, default `false`)
    Insert the original line as a comment above the generated LaTeX / Markdown.
-
 ------
 
 ## Error handling & debugging
@@ -369,11 +378,6 @@ You can open this via:
 
 - **View → Output → choose “Lazy LaTeX”** in the dropdown.
 
-This applies both to:
-
-- Manual command (`Lazy LaTeX: Convert selection to math`)
-- Auto mode on Enter (math wrappers and `;;;;...;;;;` insert-anything wrappers)
-
 ------
 
 ## Requirements
@@ -382,7 +386,6 @@ This applies both to:
 - An LLM provider:
   - OpenAI-compatible chat completion endpoint, or
   - Anthropic Claude Messages API, or
-  - Gemini OpenAI-compatible endpoint
 - A valid API key and model name for that provider
 
 ------
