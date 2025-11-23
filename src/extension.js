@@ -115,8 +115,43 @@ async function processLineForWrappers(document, lineNumber, wrappers) {
 
     for (let idx = 0; idx < mathWrappers.length; idx++) {
       const w = mathWrappers[idx];
-      const latex = (latexList[idx] || '').trim();
+      let latex = (latexList[idx] || '').trim();
       if (!latex) continue;
+
+      // Optional extra replacement to delete trailing punctuation after the wrapper
+      let extraReplacement = null;
+
+      if (w.type === 'display' && typeof originalLineText === 'string') {
+        const line = originalLineText;
+        const len = line.length;
+        let i = w.end;
+
+        // Skip whitespace after the wrapper
+        while (i < len && /\s/.test(line[i])) {
+          i++;
+        }
+
+        const punctChars = '.,;:!?';
+        if (i < len && punctChars.includes(line[i])) {
+          const punctChar = line[i];
+
+          // Move the punctuation inside the display math
+          latex = `${latex} ${punctChar}`;
+
+          // And remove the punctuation + any following whitespace,
+          // so the next visible text (e.g. "Then we") is flush.
+          let j = i + 1;
+          while (j < len && /\s/.test(line[j])) {
+            j++;
+          }
+
+          extraReplacement = {
+            start: i,
+            end: j,
+            text: '',
+          };
+        }
+      }
 
       let wrappedText;
       if (w.type === 'inline') {
@@ -133,11 +168,17 @@ async function processLineForWrappers(document, lineNumber, wrappers) {
         wrappedText = displayBlock;
       }
 
+      // Replace the wrapper itself
       replacements.push({
         start: w.start,
         end: w.end,
         text: wrappedText,
       });
+
+      // Also delete the punctuation if we found one
+      if (extraReplacement) {
+        replacements.push(extraReplacement);
+      }
     }
   }
 
