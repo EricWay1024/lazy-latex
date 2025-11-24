@@ -1,13 +1,26 @@
-.vscode/**
-.vscode-test/**
-test/**
+# Editor
+.vscode/
+
+# Project definitions
+.github/
 .gitignore
-.yarnrc
-vsc-extension-quickstart.md
-**/jsconfig.json
-**/*.map
-**/eslint.config.mjs
-**/.vscode-test.*
+jsconfig.json
 pnpm-lock.yaml
 pnpm-workspace.yaml
-.github/
+
+# Linting
+.pre-commit-config.yaml
+.markdownlint.yaml
+.prettierrc
+.prettierignore
+eslint.config.*
+
+# Development
+vsc-extension-quickstart.md
+
+# Tests
+test/
+.vscode-test/
+.vscode-test.*
+**/*.map
+

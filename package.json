@@ -1,121 +1,124 @@
 {
-  "name": "lazy-latex",
-  "displayName": "Lazy LaTeX",
-  "description": "Write LaTeX lazily using LLM.",
-  "publisher": "YuhangWei",
-  "repository": "https://github.com/EricWay1024/lazy-latex",
-  "license": "MIT",
-  "version": "0.1.4",
-  "icon": "images/icon.png",
-  "engines": {
-    "vscode": "^1.106.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "main": "./src/extension.js",
-  "activationEvents": [
-    "onLanguage:latex",
-    "onLanguage:markdown"
-  ],
-  "contributes": {
-    "commands": [
-      {
-        "command": "lazy-latex.mathToLatex",
-        "title": "Lazy LaTeX: Convert selection to math"
-      }
+    "name": "lazy-latex",
+    "displayName": "Lazy LaTeX",
+    "description": "Write LaTeX lazily using LLM.",
+    "publisher": "YuhangWei",
+    "repository": "https://github.com/EricWay1024/lazy-latex",
+    "license": "MIT",
+    "version": "0.1.4",
+    "icon": "images/icon.png",
+    "engines": {
+        "vscode": "^1.106.0"
+    },
+    "categories": [
+        "Other"
     ],
-    "keybindings": [
-      {
-        "command": "lazy-latex.mathToLatex",
-        "key": "ctrl+alt+m",
-        "when": "editorTextFocus"
-      }
+    "main": "./src/extension.js",
+    "activationEvents": [
+        "onLanguage:latex",
+        "onLanguage:markdown"
     ],
-    "configuration": {
-      "title": "Lazy LaTeX",
-      "properties": {
-        "lazy-latex.autoReplace": {
-          "type": "boolean",
-          "default": true,
-          "description": "Automatically convert ;;...;; and ;;;...;;; wrappers on Enter."
-        },
-        "lazy-latex.llm.provider": {
-          "type": "string",
-          "default": "openai",
-          "enum": [
-            "openai",
-            "anthropic"
-          ],
-          "markdownDescription": "Protocol used by LLM provider. 'openai' for OpenAI-compatible chat completion APIs; 'anthropic' for Claude (Messages API)."
-        },
-        "lazy-latex.llm.endpoint": {
-          "type": "string",
-          "default": "https://api.openai.com/v1/chat/completions",
-          "description": "HTTP endpoint for an LLM chat completion API."
-        },
-        "lazy-latex.llm.apiKey": {
-          "type": "string",
-          "default": "",
-          "description": "API key for your LLM provider.",
-          "secret": true
-        },
-        "lazy-latex.llm.model": {
-          "type": "string",
-          "default": "gpt-4o-mini",
-          "description": "Model name to use for LaTeX generation."
-        },
-        "lazy-latex.prompt.extra": {
-          "type": "string",
-          "default": "",
-          "markdownDescription": "Extra system-level instructions appended to the LaTeX generation prompt. Useful per project, e.g. “use bold vectors, treat f as a PDF, use \\mathbb for sets”."
-        },
-        "lazy-latex.context.lines": {
-          "type": "integer",
-          "default": 50,
-          "minimum": 0,
-          "description": "Number of previous lines to send as context to the LLM. 0 disables context. A very large number would mean the entire file up to the current line."
-        },
-        "lazy-latex.keepOriginalComment": {
-          "type": "boolean",
-          "default": false,
-          "description": "If enabled, when ;;...;; or ;;;...;;; is auto-replaced, insert a preceding LaTeX comment line containing the original input line."
-        },
-        "lazy-latex.output.latex.inlineStyle": {
-          "type": "string",
-          "enum": [
-            "dollar",
-            "paren"
-          ],
-          "default": "dollar",
-          "description": "Inline math delimiters in LaTeX output. 'dollar' = $...$, 'paren' = \\(...\\)."
-        },
-        "lazy-latex.output.latex.displayStyle": {
-          "type": "string",
-          "enum": [
-            "brackets",
-            "dollars"
-          ],
-          "default": "brackets",
-          "description": "Display math delimiters in LaTeX output. 'brackets' = \\[...\\], 'dollars' = $$...$$."
+    "contributes": {
+        "commands": [
+            {
+                "command": "lazy-latex.mathToLatex",
+                "title": "Lazy LaTeX: Convert selection to math"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "lazy-latex.mathToLatex",
+                "key": "ctrl+alt+m",
+                "when": "editorTextFocus"
+            }
+        ],
+        "configuration": {
+            "title": "Lazy LaTeX",
+            "properties": {
+                "lazy-latex.autoReplace": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Automatically convert ;;...;; and ;;;...;;; wrappers on Enter."
+                },
+                "lazy-latex.llm.provider": {
+                    "type": "string",
+                    "default": "openai",
+                    "enum": [
+                        "openai",
+                        "anthropic"
+                    ],
+                    "markdownDescription": "Protocol used by LLM provider. 'openai' for OpenAI-compatible chat completion APIs; 'anthropic' for Claude (Messages API)."
+                },
+                "lazy-latex.llm.endpoint": {
+                    "type": "string",
+                    "default": "https://api.openai.com/v1/chat/completions",
+                    "description": "HTTP endpoint for an LLM chat completion API."
+                },
+                "lazy-latex.llm.apiKey": {
+                    "type": "string",
+                    "default": "",
+                    "description": "API key for your LLM provider.",
+                    "secret": true
+                },
+                "lazy-latex.llm.model": {
+                    "type": "string",
+                    "default": "gpt-4o-mini",
+                    "description": "Model name to use for LaTeX generation."
+                },
+                "lazy-latex.prompt.extra": {
+                    "type": "string",
+                    "default": "",
+                    "markdownDescription": "Extra system-level instructions appended to the LaTeX generation prompt. Useful per project, e.g. “use bold vectors, treat f as a PDF, use \\mathbb for sets”."
+                },
+                "lazy-latex.context.lines": {
+                    "type": "integer",
+                    "default": 50,
+                    "minimum": 0,
+                    "description": "Number of previous lines to send as context to the LLM. 0 disables context. A very large number would mean the entire file up to the current line."
+                },
+                "lazy-latex.keepOriginalComment": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "If enabled, when ;;...;; or ;;;...;;; is auto-replaced, insert a preceding LaTeX comment line containing the original input line."
+                },
+                "lazy-latex.output.latex.inlineStyle": {
+                    "type": "string",
+                    "enum": [
+                        "dollar",
+                        "paren"
+                    ],
+                    "default": "dollar",
+                    "description": "Inline math delimiters in LaTeX output. 'dollar' = $...$, 'paren' = \\(...\\)."
+                },
+                "lazy-latex.output.latex.displayStyle": {
+                    "type": "string",
+                    "enum": [
+                        "brackets",
+                        "dollars"
+                    ],
+                    "default": "brackets",
+                    "description": "Display math delimiters in LaTeX output. 'brackets' = \\[...\\], 'dollars' = $$...$$."
+                }
+            }
         }
-      }
-    }
-  },
-  "scripts": {
-    "package": "pnpm vsce package --no-dependencies --githubBranch master",
-    "lint": "eslint .",
-    "pretest": "pnpm run lint",
-    "test": "vscode-test"
-  },
-  "devDependencies": {
-    "@types/mocha": "^10.0.10",
-    "@types/node": "22.x",
-    "@types/vscode": "^1.106.0",
-    "@vscode/test-cli": "^0.0.11",
-    "@vscode/test-electron": "^2.5.2",
-    "@vscode/vsce": "^3.7.0",
-    "eslint": "^9.32.0"
-  },
-  "packageManager": "pnpm@10.23.0"
+    },
+    "scripts": {
+        "package": "vsce package --no-dependencies --githubBranch master",
+        "lint:md": "markdownlint-cli2 '*.md' --fix",
+        "lint": "prettier --write . && eslint --fix .",
+        "pretest": "pnpm lint",
+        "test": "vscode-test"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.39.1",
+        "@types/mocha": "^10.0.10",
+        "@vscode/test-cli": "^0.0.11",
+        "@vscode/test-electron": "^2.5.2",
+        "@vscode/vsce": "^3.7.0",
+        "eslint": "^9.32.0",
+        "globals": "^16.5.0",
+        "markdownlint-cli2": "^0.19.1",
+        "prettier": "^3.6.2"
+    },
+    "packageManager": "pnpm@10.23.0"
 }
