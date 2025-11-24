@@ -8,7 +8,6 @@ Type fuzzy / natural language math between tiny markers, hit **Enter**, and Lazy
 
 ## What it does
 
-
 With this extension, you no longer need to follow the LaTeX syntax strictly. All you need to do is write LaTeX in a fuzzy way, or simply describe the formulas you want.
 
 In a LaTeX or Markdown file, you can, for example, write:
@@ -16,7 +15,6 @@ In a LaTeX or Markdown file, you can, for example, write:
 ```tex
 Consider the function ;;f (x) = (x+2 if x >= 0, 2 otherwise);;. Its definite integral from $-2$ to $2$ is ;;;int from -2 to 2 f(x) dx;;; Now consider the function ;;g = f + 1 but same format as f;;.
 ```
-
 
 Press **Enter** and it becomes:
 
@@ -27,6 +25,7 @@ $$
 $$
 Now consider the function $g(x) = \begin{cases} x + 3 & \text{if } x \geq 0 \\ 3 & \text{otherwise} \end{cases}$.
 ```
+
 which can be rendered correctly by LaTeX or Markdown.
 
 Note that the wrapper `;;...;;` gives inline math and `;;;...;;;` display math. Anything outside of these wrappers will not be touched, so you may still write strict LaTeX formulas with the usual wrappers (`$...$` etc.) if you need to.
@@ -47,14 +46,15 @@ Press **Enter**, and it will insert that summary in place of the wrapper.
 ## Quick start
 
 1. **Install the extension**
-    Search for **“Lazy LaTeX”** in the VS Code Extensions view and install it.
+   Search for **“Lazy LaTeX”** in the VS Code Extensions view and install it.
 
 2. **Open a LaTeX or Markdown project**
-    Open a folder that contains `.tex` or `.md` files.
+   Open a folder that contains `.tex` or `.md` files.
 
 3. **Configure your LLM**
-    In VS Code, go to **Settings → search “Lazy LaTeX”**.
-    Set at least:
+   In VS Code, go to **Settings → search “Lazy LaTeX”**.
+
+   Set at least:
 
    - `Lazy-latex › Llm: Provider` (Note: choose `openai` for any OpenAI-compatible APIs; see examples below.)
      - `openai` | `anthropic`
@@ -64,34 +64,34 @@ Press **Enter**, and it will insert that summary in place of the wrapper.
 
    Examples:
 
-  - **OpenAI**
-    - Provider: `openai`
-    - Endpoint: `https://api.openai.com/v1/chat/completions`
-    - Model: `gpt-4o-mini` (or similar)
-  - **Anthropic (Claude)**
-    - Provider: `anthropic`
-    - Endpoint: `https://api.anthropic.com/v1/messages`
-    - Model: `claude-haiku-4-5` (or another Claude 3 model)
-  - **DeepSeek**
-    - Provider: `openai`
-    - Endpoint: `https://api.deepseek.com/v1/chat/completions`
-    - Model: `deepseek-chat`
-  - **Doubao (ByteDance / 火山引擎豆包)**
-    - Provider: `openai`
-    - Endpoint: `https://ark.cn-beijing.volces.com/api/v3/chat/completions`
-    - Model: `doubao-1-5-pro-32k-250115` (other Doubao chat models may also work)
-  - **Gemini (OpenAI-compatible)**
-    - Provider: `openai`
-    - Endpoint: `https://generativelanguage.googleapis.com/v1beta/openai/chat/completions`
-    - Model: `gemini-2.5-flash` (or similar)
-  - **Ollama (local models)**
-    - Provider: `openai`
-    - Endpoint: `http://localhost:11434/v1/chat/completions`
-    - Model: any local model you’ve pulled in Ollama (e.g. `qwen2.5:7b`, `llama3.1:8b`)
-    - Note: when using `localhost` / `127.0.0.1` endpoints, the API key can be left blank.
+   - **OpenAI**
+     - Provider: `openai`
+     - Endpoint: `https://api.openai.com/v1/chat/completions`
+     - Model: `gpt-4o-mini` (or similar)
+   - **Anthropic (Claude)**
+     - Provider: `anthropic`
+     - Endpoint: `https://api.anthropic.com/v1/messages`
+     - Model: `claude-haiku-4-5` (or another Claude 3 model)
+   - **DeepSeek**
+     - Provider: `openai`
+     - Endpoint: `https://api.deepseek.com/v1/chat/completions`
+     - Model: `deepseek-chat`
+   - **Doubao (ByteDance / 火山引擎豆包)**
+     - Provider: `openai`
+     - Endpoint: `https://ark.cn-beijing.volces.com/api/v3/chat/completions`
+     - Model: `doubao-1-5-pro-32k-250115` (other Doubao chat models may also work)
+   - **Gemini (OpenAI-compatible)**
+     - Provider: `openai`
+     - Endpoint: `https://generativelanguage.googleapis.com/v1beta/openai/chat/completions`
+     - Model: `gemini-2.5-flash` (or similar)
+   - **Ollama (local models)**
+     - Provider: `openai`
+     - Endpoint: `http://localhost:11434/v1/chat/completions`
+     - Model: any local model you’ve pulled in Ollama (e.g. `qwen2.5:7b`, `llama3.1:8b`)
+     - Note: when using `localhost` / `127.0.0.1` endpoints, the API key can be left blank.
   
 4. **Try it once**
-    In a `.tex` or `.md` file:
+   In a `.tex` or `.md` file:
 
    ```tex
    Let ;;cal C;; be a locally small category. Then ;;h_A := mathrm Hom(A, -);; is a functor ;;C -> Set (with bold);;. The Yoneda Lemma states that for any functor ;;F : C ->Set;;, there is a bijection ;;mathrm Nat(h_A, F) iso F(A);;. 
@@ -103,8 +103,7 @@ Press **Enter**, and it will insert that summary in place of the wrapper.
    Let $\mathcal{C}$ be a locally small category. Then $h_A := \mathrm{Hom}(A, -)$ is a functor $\mathcal{C} \to \mathbf{Set}$. The Yoneda Lemma states that for any functor $F : \mathcal{C} \to \mathbf{Set}$, there is a bijection $\mathrm{Nat}(h_A, F) \cong F(A)$. 
    ```
 
-   > Let $\mathcal{C}$ be a locally small category. Then $h_A := \mathrm{Hom}(A, -)$ is a functor $\mathcal{C} \to \mathbf{Set}$. The Yoneda Lemma states that for any functor $F : \mathcal{C} \to \mathbf{Set}$, there is a bijection $\mathrm{Nat}(h_A, F) \cong F(A)$. 
- 
+   > Let $\mathcal{C}$ be a locally small category. Then $h_A := \mathrm{Hom}(A, -)$ is a functor $\mathcal{C} \to \mathbf{Set}$. The Yoneda Lemma states that for any functor $F : \mathcal{C} \to \mathbf{Set}$, there is a bijection $\mathrm{Nat}(h_A, F) \cong F(A)$.
 
 That’s enough to start using it.
 
@@ -196,7 +195,7 @@ The output is inserted **as-is**.
 
 ------
 
-## Style customization 
+## Style customization
 
 You control the “style” of math in two layers.
 
@@ -243,7 +242,7 @@ So you can, for example, enforce vector styles and also say "summaries should be
 
 ------
 
-## Context awareness 
+## Context awareness
 
 Lazy LaTeX sends some of your document as context so the LLM can use earlier definitions and keep notation consistent.
 
@@ -325,13 +324,13 @@ Open **Settings** → search for `Lazy LaTeX`.
 Key options:
 
 - **`lazy-latex.autoReplace`** (boolean, default `true`)
-   Automatically convert `;;...;;`, `;;;...;;;`, and `;;;;...;;;;` wrappers on Enter in `.tex` / `.md` files.
+  Automatically convert `;;...;;`, `;;;...;;;`, and `;;;;...;;;;` wrappers on Enter in `.tex` / `.md` files.
 - **`lazy-latex.llm.provider`** (string, default `"openai"`)
-   Which protocol/provider to use:
+  Which protocol/provider to use:
   - `"openai"` — any OpenAI-compatible chat completion API (OpenAI, DeepSeek, Doubao, Gemini’s OpenAI-compatible endpoint, Ollama, etc.)
   - `"anthropic"` — Claude via Anthropic Messages API
 - **`lazy-latex.llm.endpoint`** (string)
-   Endpoint URL for your provider, for example:
+  Endpoint URL for your provider, for example:
   - OpenAI: `https://api.openai.com/v1/chat/completions`
   - DeepSeek: `https://api.deepseek.com/v1/chat/completions`
   - Doubao: `https://ark.cn-beijing.volces.com/api/v3/chat/completions`
@@ -339,11 +338,11 @@ Key options:
   - Anthropic (Claude): `https://api.anthropic.com/v1/messages`
   - Ollama (local): `http://localhost:11434/v1/chat/completions`
 - **`lazy-latex.llm.apiKey`** (string, secret)
-   API key for your provider.
+  API key for your provider.
   - For **remote** providers (OpenAI, DeepSeek, Doubao, Gemini, Anthropic), this is required.
   - For **local** endpoints on `localhost` / `127.0.0.1` (e.g. Ollama), this can be left empty and Lazy LaTeX will not send an `Authorization` header.
 - **`lazy-latex.llm.model`** (string)
-   Model name used for generation, for example:
+  Model name used for generation, for example:
   - OpenAI: `gpt-4o-mini`
   - DeepSeek: `deepseek-chat`
   - Doubao: `doubao-1-5-pro-32k-250115`
@@ -351,15 +350,16 @@ Key options:
   - Anthropic: `claude-haiku-4-5`
   - Ollama: any local model you’ve pulled (e.g. `qwen2.5:7b`, `llama3.1:8b`)
 - **`lazy-latex.prompt.extra`** (string)
-   Extra global/workspace instructions (lower priority than `.lazy-latex.md`).
+  Extra global/workspace instructions (lower priority than `.lazy-latex.md`).
 - **`lazy-latex.context.lines`** (integer, default `50`)
-   Number of previous lines to send as context.
+  Number of previous lines to send as context.
 - **`lazy-latex.output.latex.inlineStyle`** (string: `"dollar"` | `"paren"`, default `"dollar"`)
-   How to wrap inline math in LaTeX: `$...$` vs `\(...\)`.
+  How to wrap inline math in LaTeX: `$...$` vs `\(...\)`.
 - **`lazy-latex.output.latex.displayStyle`** (string: `"brackets"` | `"dollars"`, default `"brackets"`)
-   How to wrap display math in LaTeX: `\[...\]` vs `$$...$$`.
+  How to wrap display math in LaTeX: `\[...\]` vs `$$...$$`.
 - **`lazy-latex.keepOriginalComment`** (boolean, default `false`)
-   Insert the original line as a comment above the generated LaTeX / Markdown.
+  Insert the original line as a comment above the generated LaTeX / Markdown.
+
 ------
 
 ## Error handling & debugging
