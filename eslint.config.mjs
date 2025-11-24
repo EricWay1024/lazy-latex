@@ -1,25 +1,22 @@
-import globals from "globals";
+import js from '@eslint/js';
+import globals from 'globals';
+import { defineConfig, globalIgnores } from 'eslint/config';
 
-export default [{
-    files: ["**/*.js"],
+export default defineConfig([
+  globalIgnores(['node_modules/', '.vscode-test/']),
+  {
+    files: ['**/*.js'],
     languageOptions: {
-        globals: {
-            ...globals.commonjs,
-            ...globals.node,
-            ...globals.mocha,
-        },
-
-        ecmaVersion: 2022,
-        sourceType: "module",
+      ecmaVersion: 2022,
+      sourceType: 'script',
+      globals: {
+        ...globals.node,
+        ...globals.commonjs,
+        ...globals.mocha,
+      },
     },
-
     rules: {
-        "no-const-assign": "warn",
-        "no-this-before-super": "warn",
-        "no-undef": "warn",
-        "no-unreachable": "warn",
-        "no-unused-vars": "warn",
-        "constructor-super": "warn",
-        "valid-typeof": "warn",
+      ...js.configs.recommended.rules,
     },
-}];
+  },
+]);
