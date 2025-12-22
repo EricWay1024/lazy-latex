@@ -144,22 +144,48 @@ You can turn auto-conversion off or on via:
 
 ------
 
-### 2. Manual command: convert selection
+### 2. Auto-convert wrappers on save
 
-If you don’t want wrappers, or you’re editing existing text (e.g. **fixing a bugged LaTeX formula**):
+You can configure Lazy LaTeX to automatically convert all wrappers in your document when you save (Ctrl+S). This is controlled by the `lazy-latex.convertOnSave` setting with three options:
+
+- **`"none"`** (default): No automatic conversion on save.
+- **`"save-convert-save"`**: Save the document first (creating a backup), then convert all wrappers, then save again. This is safer because your original file is saved before any conversions happen.
+- **`"convert-save"`**: Convert all wrappers first, then save. This prevents LaTeX compilers from seeing unconverted wrappers if they run automatically on save. Note: If the conversion fails (e.g., API error), the file will still be saved with unconverted wrappers.
+
+This is particularly useful when:
+- You want to ensure all wrappers are converted before compiling your LaTeX document
+- You have many wrappers throughout the document and don't want to manually convert them
+- You want to batch-convert everything at once
+
+------
+
+### 3. Manual commands: convert selection or current line
+
+#### Convert selection
+
+If you don't want wrappers, or you're editing existing text (e.g. **fixing a bugged LaTeX formula**):
 
 1. Select some text (natural language or messy math).
 2. Run the command:
-   - Command Palette: **“Lazy LaTeX: Convert selection to math”**
+   - Command Palette: **"Lazy LaTeX: Convert selection to math"**
    - Or default keybinding: **Ctrl+Alt+M**
 
 The selection is replaced by a **single LaTeX math expression** (no surrounding `$` or `$$`).
 
 This works in both `.tex` and `.md` files.
 
+#### Convert current line
+
+To convert wrappers on the current line without pressing Enter:
+
+- Command Palette: **"Lazy LaTeX: Convert wrappers on current line"**
+- Or default keybinding: **Ctrl+Alt+L**
+
+This converts all `;;...;;` and `;;;...;;;` wrappers on the line where your cursor is, without inserting a newline. Useful when you want to convert wrappers but don't want to move to the next line.
+
 ------
 
-### 3. Insert-anything wrappers: `;;;;...;;;;`
+### 4. Insert-anything wrappers: `;;;;...;;;;`
 
 Sometimes you want more than just a small formula:
 
@@ -326,6 +352,8 @@ Key options:
 
 - **`lazy-latex.autoReplace`** (boolean, default `true`)
    Automatically convert `;;...;;`, `;;;...;;;`, and `;;;;...;;;;` wrappers on Enter in `.tex` / `.md` files.
+- **`lazy-latex.convertOnSave`** (string: `"none"` | `"save-convert-save"` | `"convert-save"`, default `"none"`)
+   How to handle wrapper conversion when saving (Ctrl+S). See the "Auto-convert wrappers on save" section above for details.
 - **`lazy-latex.llm.provider`** (string, default `"openai"`)
    Which protocol/provider to use:
   - `"openai"` — any OpenAI-compatible chat completion API (OpenAI, DeepSeek, Doubao, Gemini’s OpenAI-compatible endpoint, Ollama, etc.)

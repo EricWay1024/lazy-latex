@@ -23,12 +23,21 @@
       {
         "command": "lazy-latex.mathToLatex",
         "title": "Lazy LaTeX: Convert selection to math"
+      },
+      {
+        "command": "lazy-latex.convertCurrentLine",
+        "title": "Lazy LaTeX: Convert wrappers on current line"
       }
     ],
     "keybindings": [
       {
         "command": "lazy-latex.mathToLatex",
         "key": "ctrl+alt+m",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "lazy-latex.convertCurrentLine",
+        "key": "ctrl+alt+l",
         "when": "editorTextFocus"
       }
     ],
@@ -39,6 +48,21 @@
           "type": "boolean",
           "default": true,
           "description": "Automatically convert ;;...;; and ;;;...;;; wrappers on Enter."
+        },
+        "lazy-latex.convertOnSave": {
+          "type": "string",
+          "enum": [
+            "none",
+            "convert-save",
+            "save-convert-save"
+          ],
+          "enumDescriptions": [
+            "Do not convert wrappers on save.",
+            "Convert wrappers first, then save. Prevents LaTeX compilers from seeing unconverted wrappers. Note: If the conversion fails (e.g., API error), the file will still be saved with unconverted wrappers.",
+            "Save the document first, then convert wrappers, then save again. Safer as the original is saved before conversion."
+          ],
+          "default": "none",
+          "description": "How to handle wrapper conversion when saving (Ctrl+S). 'none': no conversion. 'save-convert-save': save first, convert, then save again. 'convert-save': convert first, then save."
         },
         "lazy-latex.llm.provider": {
           "type": "string",

@@ -49,6 +49,8 @@ function getOutputDelimiters(document) {
 
 // Guard so our own edits don't re-trigger processing
 let isApplyingLazyLatexEdit = false;
+// Guard to prevent infinite loops when saving after processing wrappers
+let isProcessingSave = false;
 
 /**
  * Given a document line and the detected wrappers, call the LLM in batch mode
@@ -261,6 +263,71 @@ async function processLineForWrappers(document, lineNumber, wrappers) {
 }
 
 /**
+ * Process all lines with wrappers in a document.
+ * Uses multiple passes to handle line number shifts when display math is inserted.
+ * 
+ * @param {vscode.TextDocument} document
+ * @returns {Promise<boolean>} True if any conversions were made, false otherwise
+ */
+async function processAllWrappersInDocument(document) {
+  const editor = vscode.window.activeTextEditor;
+  if (!editor || editor.document !== document) {
+    return false;
+  }
+
+  const lang = document.languageId;
+  if (lang !== 'latex' && lang !== 'markdown') {
+    return false;
+  }
+
+  let anyConversions = false;
+  const maxPasses = 10; // Prevent infinite loops
+  let pass = 0;
+
+  // Use multiple passes to handle cases where processing one line
+  // changes the document structure (e.g., display math adds newlines)
+  while (pass < maxPasses) {
+    pass++;
+    let foundWrappers = false;
+    const lineCount = document.lineCount;
+
+    // Process lines from top to bottom
+    // This ensures context includes already-converted lines above
+    for (let lineNumber = 0; lineNumber < lineCount; lineNumber++) {
+      try {
+        // Re-read line in case document changed
+        const lineText = document.lineAt(lineNumber).text;
+        const wrappers = findWrappersInLine(lineText, lang);
+
+        if (wrappers.length > 0) {
+          foundWrappers = true;
+          await processLineForWrappers(document, lineNumber, wrappers);
+          anyConversions = true;
+          
+          // After processing, the document structure may have changed
+          // Break and do another pass to catch any remaining wrappers
+          break;
+        }
+      } catch (e) {
+        console.error(`[Lazy LaTeX] Error processing line ${lineNumber}:`, e);
+        // Continue with next line
+      }
+    }
+
+    // If no wrappers were found in this pass, we're done
+    if (!foundWrappers) {
+      break;
+    }
+  }
+
+  if (pass >= maxPasses) {
+    console.warn('[Lazy LaTeX] Reached max passes while processing document wrappers.');
+  }
+
+  return anyConversions;
+}
+
+/**
  * This function is called when your extension is activated.
  * @param {vscode.ExtensionContext} context
  */
@@ -329,6 +396,60 @@ function activate(context) {
 
   context.subscriptions.push(commandDisposable);
 
+  // Command: convert wrappers on current line
+  const convertCurrentLineDisposable = vscode.commands.registerCommand(
+    'lazy-latex.convertCurrentLine',
+    async () => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        vscode.window.showInformationMessage('No active editor.');
+        return;
+      }
+
+      const document = editor.document;
+      const lang = document.languageId;
+      
+      // Only work in LaTeX and Markdown files
+      if (lang !== 'latex' && lang !== 'markdown') {
+        vscode.window.showInformationMessage(
+          'Lazy LaTeX: This command only works in LaTeX or Markdown files.'
+        );
+        return;
+      }
+
+      // Get the current line number
+      const lineNumber = editor.selection.active.line;
+      
+      try {
+        const lineText = document.lineAt(lineNumber).text;
+        const wrappers = findWrappersInLine(lineText, lang);
+
+        if (!wrappers.length) {
+          vscode.window.showInformationMessage(
+            'Lazy LaTeX: No wrappers found on the current line.'
+          );
+          return;
+        }
+
+        console.log(
+          '[Lazy LaTeX] Convert current line command on line',
+          lineNumber,
+          '— found wrappers:',
+          wrappers.map((w) => w.type + ':' + w.inner)
+        );
+
+        await processLineForWrappers(document, lineNumber, wrappers);
+      } catch (e) {
+        console.error('[Lazy LaTeX] Failed to process current line:', e);
+        vscode.window.showErrorMessage(
+          'Lazy LaTeX: Failed to process current line. See output for details.'
+        );
+      }
+    }
+  );
+
+  context.subscriptions.push(convertCurrentLineDisposable);
+
   // Auto-processing on Enter
   const changeDisposable = vscode.workspace.onDidChangeTextDocument((event) => {
     const editor = vscode.window.activeTextEditor;
@@ -379,6 +500,98 @@ function activate(context) {
   });
 
   context.subscriptions.push(changeDisposable);
+
+  // Auto-processing on save (if enabled)
+  // Mode 1: convert-save (convert before save happens)
+  const willSaveDisposable = vscode.workspace.onWillSaveTextDocument(async (event) => {
+    const document = event.document;
+    const editor = vscode.window.activeTextEditor;
+    if (!editor || editor.document !== document) return;
+    if (isApplyingLazyLatexEdit) return;
+    if (isProcessingSave) return; // Prevent infinite loops
+
+    const lang = document.languageId;
+    if (lang !== 'latex' && lang !== 'markdown') {
+      return;
+    }
+
+    // Check convertOnSave mode
+    const config = vscode.workspace.getConfiguration('lazy-latex');
+    const convertOnSaveMode = config.get('convertOnSave', 'none');
+    if (convertOnSaveMode !== 'convert-save') {
+      return;
+    }
+
+    isProcessingSave = true;
+    console.log('[Lazy LaTeX] Will save: converting wrappers before save...');
+
+    // Wait for the conversion to complete before allowing save to proceed
+    const conversionPromise = (async () => {
+      try {
+        const hadConversions = await processAllWrappersInDocument(document);
+        if (hadConversions) {
+          console.log('[Lazy LaTeX] Wrappers converted, save will proceed.');
+        } else {
+          console.log('[Lazy LaTeX] No wrappers found in document.');
+        }
+      } catch (err) {
+        console.error('[Lazy LaTeX] Error processing wrappers before save:', err);
+        vscode.window.showErrorMessage(
+          'Lazy LaTeX: Error processing wrappers before save. See output for details.'
+        );
+      } finally {
+        isProcessingSave = false;
+      }
+    })();
+    
+    event.waitUntil(conversionPromise);
+  });
+
+  context.subscriptions.push(willSaveDisposable);
+
+  // Mode 2: save-convert-save (save first, then convert, then save again)
+  const didSaveDisposable = vscode.workspace.onDidSaveTextDocument(async (document) => {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor || editor.document !== document) return;
+    if (isApplyingLazyLatexEdit) return;
+    if (isProcessingSave) return; // Prevent infinite loops
+
+    const lang = document.languageId;
+    if (lang !== 'latex' && lang !== 'markdown') {
+      return;
+    }
+
+    // Check convertOnSave mode
+    const config = vscode.workspace.getConfiguration('lazy-latex');
+    const convertOnSaveMode = config.get('convertOnSave', 'none');
+    if (convertOnSaveMode !== 'save-convert-save') {
+      return;
+    }
+
+    isProcessingSave = true;
+    console.log('[Lazy LaTeX] Save detected, processing all wrappers in document...');
+
+    try {
+      const hadConversions = await processAllWrappersInDocument(document);
+      
+      if (hadConversions) {
+        // Save again after conversions
+        await document.save();
+        console.log('[Lazy LaTeX] Document saved again after wrapper conversions.');
+      } else {
+        console.log('[Lazy LaTeX] No wrappers found in document.');
+      }
+    } catch (err) {
+      console.error('[Lazy LaTeX] Error processing wrappers on save:', err);
+      vscode.window.showErrorMessage(
+        'Lazy LaTeX: Error processing wrappers on save. See output for details.'
+      );
+    } finally {
+      isProcessingSave = false;
+    }
+  });
+
+  context.subscriptions.push(didSaveDisposable);
 }
 
 function deactivate() { }

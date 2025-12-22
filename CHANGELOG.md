@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.5] - 2025-12-22
+### Added
+- New keyboard shortcut `Ctrl+Alt+L` to convert wrappers on the current line without inserting a newline. This provides more flexibility than the Enter key behavior.
+- `lazy-latex.convertOnSave` configuration option with three modes:
+  - `"none"` (default): No conversion on save
+  - `"save-convert-save"`: Save first (backup), convert wrappers, then save again (safer)
+  - `"convert-save"`: Convert wrappers first, then save (prevents LaTeX compilers from seeing unconverted wrappers). If conversion fails, the file is still saved with unconverted wrappers.
+- Command "Lazy LaTeX: Convert wrappers on current line" accessible via Command Palette or `Ctrl+Alt+L`.
+
 ## [0.1.4] - 2025-11-23
 ### Added 
 - More instructions in the README for extra LLM model choices. 
