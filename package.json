@@ -5,7 +5,7 @@
   "publisher": "YuhangWei",
   "repository": "https://github.com/EricWay1024/lazy-latex",
   "license": "MIT",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "icon": "images/icon.png",
   "engines": {
     "vscode": "^1.106.0"
