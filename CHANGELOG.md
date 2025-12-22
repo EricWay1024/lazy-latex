@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.6] - 2025-12-22
+### Changed
+- When a wrapper is followed by a space and a single semicolon (e.g., `;;expression;; ;`), the space is now automatically removed during conversion, leaving just the semicolon. This helps avoid confusion between wrapper delimiters and actual semicolon punctuation.
+
 ## [0.1.5] - 2025-12-22
 ### Added
 - New keyboard shortcut `Ctrl+Alt+L` to convert wrappers on the current line without inserting a newline. This provides more flexibility than the Enter key behavior.

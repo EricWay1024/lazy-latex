@@ -125,6 +125,8 @@ When you press **Enter** on that line:
 - The content inside is converted to LaTeX
 - Math is wrapped in appropriate delimiters
 
+**Note:** If a wrapper is followed by a semicolon (actual punctuation), add a space before the semicolon: `;;expression;; ;`. The space will be automatically removed during conversion, leaving just the semicolon.
+
 You can turn auto-conversion off or on via:
 
 - `lazy-latex.autoReplace` (default `true`)

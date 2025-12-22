@@ -120,6 +120,37 @@ async function processLineForWrappers(document, lineNumber, wrappers) {
       let latex = (latexList[idx] || '').trim();
       if (!latex) continue;
 
+      // Check for space + single semicolon after wrapper (user's actual punctuation)
+      // Pattern: wrapper + space + ; (where ; is not part of another wrapper)
+      let spaceBeforeSemicolonReplacement = null;
+      if (typeof originalLineText === 'string') {
+        const line = originalLineText;
+        const len = line.length;
+        let i = w.end;
+
+        // Skip whitespace after the wrapper
+        let spaceStart = i;
+        while (i < len && /\s/.test(line[i])) {
+          i++;
+        }
+
+        // Check if we have exactly one semicolon (not part of ;;, ;;;, or ;;;;)
+        if (i < len && line[i] === ';') {
+          // Check if it's just a single semicolon (not followed by another semicolon)
+          if (i + 1 >= len || line[i + 1] !== ';') {
+            // This is the pattern: wrapper + space(s) + single semicolon
+            // Remove the space(s) but keep the semicolon
+            if (i > spaceStart) {
+              spaceBeforeSemicolonReplacement = {
+                start: spaceStart,
+                end: i, // Remove up to (but not including) the semicolon
+                text: '',
+              };
+            }
+          }
+        }
+      }
+
       // Optional extra replacement to delete trailing punctuation after the wrapper
       let extraReplacement = null;
 
@@ -177,6 +208,11 @@ async function processLineForWrappers(document, lineNumber, wrappers) {
         text: wrappedText,
       });
 
+      // Remove space before single semicolon if found
+      if (spaceBeforeSemicolonReplacement) {
+        replacements.push(spaceBeforeSemicolonReplacement);
+      }
+
       // Also delete the punctuation if we found one
       if (extraReplacement) {
         replacements.push(extraReplacement);
@@ -218,11 +254,46 @@ async function processLineForWrappers(document, lineNumber, wrappers) {
       const text = (generated || '').trim();
       if (!text) continue;
 
+      // Check for space + single semicolon after wrapper (user's actual punctuation)
+      let spaceBeforeSemicolonReplacement = null;
+      if (typeof originalLineText === 'string') {
+        const line = originalLineText;
+        const len = line.length;
+        let i = w.end;
+
+        // Skip whitespace after the wrapper
+        let spaceStart = i;
+        while (i < len && /\s/.test(line[i])) {
+          i++;
+        }
+
+        // Check if we have exactly one semicolon (not part of ;;, ;;;, or ;;;;)
+        if (i < len && line[i] === ';') {
+          // Check if it's just a single semicolon (not followed by another semicolon)
+          if (i + 1 >= len || line[i + 1] !== ';') {
+            // This is the pattern: wrapper + space(s) + single semicolon
+            // Remove the space(s) but keep the semicolon
+            if (i > spaceStart) {
+              spaceBeforeSemicolonReplacement = {
+                start: spaceStart,
+                end: i, // Remove up to (but not including) the semicolon
+                text: '',
+              };
+            }
+          }
+        }
+      }
+
       replacements.push({
         start: w.start,
         end: w.end,
         text,
       });
+
+      // Remove space before single semicolon if found
+      if (spaceBeforeSemicolonReplacement) {
+        replacements.push(spaceBeforeSemicolonReplacement);
+      }
     }
   }
 
